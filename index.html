@@ -301,6 +301,23 @@
             overflow-y: auto;
         }
 
+        .html-preview {
+            width: 100%;
+            min-height: 100px;
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: white;
+        }
+
+        .file-preview.html-preview {
+            min-height: auto;
+            max-height: 80px;
+            overflow: hidden;
+            padding: 8px;
+            font-size: 0.85rem;
+        }
+
         .overlay {
             position: fixed;
             top: 0;
@@ -544,7 +561,7 @@
                 { name: 'tsconfig.json', type: 'file', size: 680, ext: 'json', preview: '{\n  "compilerOptions": {\n    "target": "ES2020",\n    "lib": ["ES2020", "DOM"],\n    "module": "ESNext",\n    "strict": true,\n    "paths": {\n      "@/*": ["./src/*"],\n      "~types": ["./src/types"],\n      "~components/*": ["./src/components/*"],\n      "~features/*": ["./src/features/*"]\n    }\n  }\n}' },
                 { name: 'vite.config.ts', type: 'file', size: 920, ext: 'ts', preview: 'import { defineConfig } from "vite";\nimport react from "@vitejs/plugin-react";\nimport path from "path";\n\nexport default defineConfig({\n  plugins: [react()],\n  resolve: {\n    alias: {\n      "@": path.resolve(__dirname, "./src"),\n      "~types": path.resolve(__dirname, "./src/types"),\n    },\n  },\n});' },
                 { name: 'README.md', type: 'file', size: 2400, ext: 'md', preview: '# Claude Tool Use\n\nA modern React application demonstrating best practices for:\n- Suspense-based data fetching\n- Feature-based file organization\n- TanStack Query & Router\n- MUI v7 styling\n\n## Getting Started\n\nnpm install\nnpm run dev' },
-                { name: 'index.html', type: 'file', size: 480, ext: 'html', preview: '<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>Claude Tool Use</title>\n</head>\n<body>\n  <div id="root"></div>\n  <script type="module" src="/src/main.tsx"><\\/script>\n</body>\n</html>' }
+                { name: 'index.html', type: 'file', size: 520, ext: 'html', preview: '<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>Claude Tool Use</title>\n</head>\n<body>\n  <main>Claude Tool Use History</main>\n  <div id="root"></div>\n</body>\n</html>' }
             ]
         };
 
@@ -657,6 +674,16 @@
                 const icon = isFolder ? '📁' : getFileIcon(item.ext);
                 const childCount = isFolder ? (item.children?.length || 0) : null;
                 const size = !isFolder ? formatSize(item.size) : null;
+                const isHtml = item.ext === 'html' || item.ext === 'htm';
+
+                let previewContent = '';
+                if (!isFolder && item.preview) {
+                    if (isHtml) {
+                        previewContent = `<div class="file-preview html-preview">${item.preview}</div>`;
+                    } else {
+                        previewContent = `<div class="file-preview">${escapeHtml(item.preview.substring(0, 150))}...</div>`;
+                    }
+                }
 
                 return `
                     <div class="file-card" onclick="${isFolder ? `navigateTo([...${JSON.stringify(currentPath)}, '${item.name}'])` : `openDetail(${JSON.stringify(item).replace(/"/g, '&quot;')})`}">
@@ -667,7 +694,7 @@
                         <div class="file-meta">
                             ${isFolder ? `<span>${childCount} items</span>` : `<span>${size}</span><span>${item.ext?.toUpperCase() || 'FILE'}</span>`}
                         </div>
-                        ${!isFolder && item.preview ? `<div class="file-preview">${escapeHtml(item.preview.substring(0, 150))}...</div>` : ''}
+                        ${previewContent}
                     </div>
                 `;
             }).join('');
@@ -769,6 +796,32 @@
 
             title.textContent = item.name;
 
+            const isHtml = item.ext === 'html' || item.ext === 'htm';
+
+            let previewHtml = '';
+            if (item.preview) {
+                if (isHtml) {
+                    // Render HTML directly in a div
+                    previewHtml = `
+                        <div class="detail-section">
+                            <h3>Rendered Preview</h3>
+                            <div class="html-preview">${item.preview}</div>
+                        </div>
+                        <div class="detail-section">
+                            <h3>Source Code</h3>
+                            <pre class="detail-code">${escapeHtml(item.preview)}</pre>
+                        </div>
+                    `;
+                } else {
+                    previewHtml = `
+                        <div class="detail-section">
+                            <h3>Preview</h3>
+                            <pre class="detail-code">${escapeHtml(item.preview)}</pre>
+                        </div>
+                    `;
+                }
+            }
+
             content.innerHTML = `
                 <div class="detail-section">
                     <h3>File Info</h3>
@@ -776,12 +829,7 @@
                     <p><strong>Size:</strong> ${formatSize(item.size)}</p>
                     <p><strong>Path:</strong> /${currentPath.join('/')}/${item.name}</p>
                 </div>
-                ${item.preview ? `
-                <div class="detail-section">
-                    <h3>Preview</h3>
-                    <pre class="detail-code">${escapeHtml(item.preview)}</pre>
-                </div>
-                ` : ''}
+                ${previewHtml}
             `;
 
             panel.classList.add('open');
