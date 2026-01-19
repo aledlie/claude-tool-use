@@ -140,15 +140,20 @@ function renderTree() {
 /**
  * Render tree items recursively
  */
-function renderTreeItems(items, depth) {
+function renderTreeItems(items, depth, parentPath = []) {
     return sortItems(items).map(item => {
         const isFolder = item.type === 'folder';
         const indent = '<span class="tree-indent"></span>'.repeat(depth);
         const icon = isFolder ? '📁' : getFileIcon(item.ext);
         const hasChildren = isFolder && item.children?.length > 0;
+        const itemPath = [...parentPath, item.name];
+
+        const clickAction = isFolder
+            ? `navigateTo(${JSON.stringify(itemPath).replace(/"/g, '&quot;')})`
+            : `openDetail(${JSON.stringify(item).replace(/"/g, '&quot;')})`;
 
         let html = `
-            <div class="tree-item" onclick="${isFolder ? '' : `openDetail(${JSON.stringify(item).replace(/"/g, '&quot;')})`}">
+            <div class="tree-item" onclick="${clickAction}">
                 ${indent}
                 <span class="tree-toggle">${hasChildren ? '▸' : ''}</span>
                 <span class="tree-icon">${icon}</span>
@@ -157,7 +162,7 @@ function renderTreeItems(items, depth) {
         `;
 
         if (hasChildren) {
-            html += renderTreeItems(item.children, depth + 1);
+            html += renderTreeItems(item.children, depth + 1, itemPath);
         }
 
         return html;
