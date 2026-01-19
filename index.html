@@ -8,24 +8,15 @@
 </head>
 <body>
     <header class="app-bar">
-        <h1>Claude History Explorer</h1>
-        <div class="subtitle">Session logs, debug output, and project history</div>
-    </header>
-
-    <main class="container">
-        <div class="search-bar">
-            <input type="text" class="search-input" id="searchInput" placeholder="Search files and folders...">
-            <div class="view-toggle">
-                <button class="filter-btn active" data-view="grid" onclick="setView('grid')">Grid</button>
-                <button class="filter-btn" data-view="tree" onclick="setView('tree')">Tree</button>
-            </div>
-        </div>
-
         <nav class="breadcrumb" id="breadcrumb">
             <span class="breadcrumb-current">/</span>
         </nav>
-
-        <div class="stats-bar" id="statsBar">
+        <div class="app-bar-main">
+            <div class="app-bar-left">
+                <h1>Claude History Explorer</h1>
+                <div class="subtitle">Session logs, debug output, and project history</div>
+            </div>
+            <div class="stats-bar" id="statsBar">
             <div class="stat-item">
                 <span class="stat-icon">📁</span>
                 <span class="stat-value" id="folderCount">0</span>
@@ -42,6 +33,55 @@
                 <span class="stat-label">Total Size</span>
             </div>
         </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="search-bar">
+            <input type="text" class="search-input" id="searchInput" placeholder="Search files and folders...">
+            <div class="view-toggle">
+                <button class="filter-btn active" data-view="grid" onclick="setView('grid')">Grid</button>
+                <button class="filter-btn" data-view="tree" onclick="setView('tree')">Tree</button>
+            </div>
+        </div>
+
+        <details class="about-section" id="aboutSection">
+            <summary class="about-toggle">
+                <span class="about-icon">ℹ️</span>
+                <span>About this archive</span>
+                <span class="about-chevron"></span>
+            </summary>
+            <div class="about-content">
+                <p class="about-intro">A browsable archive of Claude Code session history, capturing AI-assisted development workflows across multiple projects.</p>
+
+                <div class="about-grid">
+                    <div class="about-card">
+                        <h3>📋 Session Logs</h3>
+                        <p>JSONL files with complete conversation histories: user prompts, Claude responses, tool calls, and auto-generated summaries with timestamps and metadata.</p>
+                    </div>
+                    <div class="about-card">
+                        <h3>🐛 Debug Logs</h3>
+                        <p>826 files capturing internal operations: settings watching, plugin loading, LSP management, skill loading, and token summarization.</p>
+                    </div>
+                    <div class="about-card">
+                        <h3>📂 File History</h3>
+                        <p>625+ versioned snapshots of tracked files before modifications, with @v1, @v2 suffixes enabling state review at any session point.</p>
+                    </div>
+                    <div class="about-card">
+                        <h3>💻 Shell Snapshots</h3>
+                        <p>154 captures of shell command execution including inputs, outputs, working directories, and environment context.</p>
+                    </div>
+                    <div class="about-card">
+                        <h3>✅ Todos</h3>
+                        <p>Task tracking state from sessions: in-progress lists, completed items, and agent-specific todo states.</p>
+                    </div>
+                    <div class="about-card">
+                        <h3>📁 Projects</h3>
+                        <p>56 project-specific directories: AnalyticsBot, Inventory, ISPublicSites, IntegrityStudioClients, PersonalSite, and more.</p>
+                    </div>
+                </div>
+            </div>
+        </details>
 
         <div id="treeView" class="tree-view" style="display: none;"></div>
         <div id="gridView" class="file-grid"></div>

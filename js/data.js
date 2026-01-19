@@ -1,7 +1,7 @@
 /**
  * Repository file structure data
  * Auto-generated from directory contents
- * Generated: 2026-01-19T21:46:00.472Z
+ * Generated: 2026-01-19T22:08:00.883Z
  */
 const fileStructure = {
   "name": "claude-tool-use",
@@ -372,13 +372,6 @@ const fileStructure = {
               "preview": "Claude Code Configuration Backup\n================================\n\nBackup Time: 2025-12-08 17:03:43\n..."
             },
             {
-              "name": "package.json",
-              "type": "file",
-              "size": 1190,
-              "ext": "json",
-              "preview": "{\n  \"name\": \"claude-dev-environment\",\n  \"version\": \"1.0.0\",\n  \"description\": \"Centralized dependenci..."
-            },
-            {
               "name": "settings.json",
               "type": "file",
               "size": 2632,
@@ -421,18 +414,6 @@ const fileStructure = {
           "type": "file",
           "size": 5884,
           "ext": "md"
-        }
-      ]
-    },
-    {
-      "name": "css",
-      "type": "folder",
-      "children": [
-        {
-          "name": "styles.css",
-          "type": "file",
-          "size": 11167,
-          "ext": "css"
         }
       ]
     },
@@ -502,18 +483,6 @@ const fileStructure = {
         }
       ],
       "truncated": 814
-    },
-    {
-      "name": "docs",
-      "type": "folder",
-      "children": [
-        {
-          "name": "SESSION_HISTORY.md",
-          "type": "file",
-          "size": 2235,
-          "ext": "md"
-        }
-      ]
     },
     {
       "name": "file-history",
@@ -30329,36 +30298,6 @@ const fileStructure = {
       ]
     },
     {
-      "name": "js",
-      "type": "folder",
-      "children": [
-        {
-          "name": "app.js",
-          "type": "file",
-          "size": 6918,
-          "ext": "js"
-        },
-        {
-          "name": "data.js",
-          "type": "file",
-          "size": 0,
-          "ext": "js"
-        },
-        {
-          "name": "renderers.js",
-          "type": "file",
-          "size": 9604,
-          "ext": "js"
-        },
-        {
-          "name": "utils.js",
-          "type": "file",
-          "size": 2951,
-          "ext": "js"
-        }
-      ]
-    },
-    {
       "name": "projects",
       "type": "folder",
       "children": [
@@ -37823,39 +37762,6 @@ const fileStructure = {
         }
       ],
       "truncated": 1505
-    },
-    {
-      "name": "CLAUDE.md",
-      "type": "file",
-      "size": 1856,
-      "ext": "md",
-      "preview": "# claude-tool-use\n\nStatic HTML file explorer for browsing repository file structures.\n\n## Project St..."
-    },
-    {
-      "name": "index.html",
-      "type": "file",
-      "size": 2500,
-      "ext": "html"
-    },
-    {
-      "name": "package-lock.json",
-      "type": "file",
-      "size": 2263,
-      "ext": "json"
-    },
-    {
-      "name": "package.json",
-      "type": "file",
-      "size": 608,
-      "ext": "json",
-      "preview": "{\n  \"name\": \"claude-tool-use\",\n  \"version\": \"1.0.0\",\n  \"description\": \"\",\n  \"main\": \"index.js\",\n  \"d..."
-    },
-    {
-      "name": "playwright.config.ts",
-      "type": "file",
-      "size": 277,
-      "ext": "ts",
-      "preview": "import { defineConfig } from '@playwright/test';\n\nexport default defineConfig({\n  testDir: './tests'..."
     }
   ]
 };

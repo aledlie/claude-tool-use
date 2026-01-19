@@ -1,24 +1,24 @@
-# claude-tool-use
+# Claude History Explorer
 
-Static HTML file explorer for browsing repository file structures.
+Static HTML file explorer for browsing Claude Code session history, debug logs, and project data.
 
 ## Project Structure
 
 ```
 claude-tool-use/
-├── index.html          # Main file explorer interface
-├── CLAUDE.md           # This file
+├── index.html              # Main explorer interface
+├── css/styles.css          # Styling with CSS custom properties
+├── js/
+│   ├── data.js             # Generated file structure data
+│   ├── utils.js            # Utility functions, icons, helpers
+│   ├── renderers.js        # Preview renderers (JSONL, JSON, code, etc.)
+│   └── app.js              # Main application logic
+├── scripts/
+│   └── generate-structure.js  # Node.js script to regenerate data.js
+├── CLAUDE.md               # This file
 └── .claude/
     └── settings.local.json
 ```
-
-## Current Status
-
-- **Phase**: Initial Development
-- **Last Updated**: 2025-01-19
-- **Files**: 1 (index.html - 34KB)
-
-See `docs/SESSION_HISTORY.md` for session details.
 
 ## Quick Start
 
@@ -26,51 +26,55 @@ See `docs/SESSION_HISTORY.md` for session details.
 # Open in browser
 open index.html
 
-# Or serve locally
-python3 -m http.server 8080
+# Regenerate data after adding new history files
+node scripts/generate-structure.js > js/data.js
 ```
 
-## Architecture
+## Features
 
-### index.html
+### File Browsing
+- **Grid/Tree Views**: Toggle between card grid and hierarchical tree
+- **Search**: Real-time filtering of files and folders
+- **Breadcrumb Navigation**: Home icon, chevron separators, path truncation, tooltips
+- **Stats Bar**: Folder/file counts, total size (includes truncated files)
 
-Single-file static application with:
-- **HTML**: Semantic structure with app bar, search, breadcrumb, stats, grid/tree views, detail panel
-- **CSS**: CSS custom properties, responsive grid, MUI-inspired styling
-- **JavaScript**: Vanilla JS with file structure data object, navigation, search, view toggling
+### JSONL Rendering
+- Parses Claude session logs (`.jsonl` files)
+- Displays entries with type badges (summary, user, assistant, etc.)
+- Extracts meaningful summaries from message content
+- **Clickable entries**: Opens full JSON in new styled page
 
-### Key Features
+### File Type Support
+- **JSONL**: Session logs with entry parsing
+- **JSON**: Syntax-highlighted formatting
+- **Code**: Syntax highlighting for JS/TS/etc.
+- **Markdown**: Rendered preview with source
+- **Text**: Plain text display
 
-1. **Dual View Modes**: Grid (cards) and Tree (hierarchical)
-2. **Search**: Real-time filtering of files/folders
-3. **Navigation**: Breadcrumb trail, folder click-through
-4. **File Preview**: Slide-out panel with code preview
-5. **Stats**: Folder/file counts, total size
+### UX Polish
+- Display names hide `-Users-username-` prefixes
+- Truncation indicators for folders with hidden files (`+N more`)
+- Hover states and visual feedback
+- ARIA accessibility labels
 
-### Data Structure
+## Data Generation
 
-File structure defined in `fileStructure` object (~line 350):
+The `scripts/generate-structure.js` script scans the directory and generates `js/data.js`:
 
-```javascript
-const fileStructure = {
-    name: 'repo-name',
-    type: 'folder',
-    children: [
-        { name: 'file.ts', type: 'file', size: 1200, ext: 'ts', preview: '...' },
-        { name: 'folder', type: 'folder', children: [...] }
-    ]
-};
+```bash
+node scripts/generate-structure.js > js/data.js
 ```
 
-## Customization
-
-To use with a different repository:
-1. Generate file structure JSON from target repo
-2. Replace `fileStructure` object in index.html
-3. Update title/subtitle in app bar
+### Configuration (in generate-structure.js)
+- `SKIP_DIRS`: Directories to exclude (node_modules, .git, css, js, etc.)
+- `SKIP_FILES`: Files to exclude (index.html, package.json, etc.)
+- `LARGE_DIRS`: Directories with reduced file limits (debug, todos, etc.)
+- `MAX_FILES_PER_DIR`: Default 20 files shown per folder
+- `MAX_FILES_LARGE_DIR`: 10 files for large directories
 
 ## Tech Stack
 
 - Pure HTML/CSS/JavaScript (no build tools)
 - CSS Grid for responsive layout
 - CSS custom properties for theming
+- Blob URLs for dynamic JSONL entry pages
