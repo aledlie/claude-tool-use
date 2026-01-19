@@ -105,6 +105,27 @@ const previewRenderers = {
 };
 
 /**
+ * Render preview for folder contents
+ */
+function renderFolderPreview(folder) {
+    if (!folder.children || folder.children.length === 0) return '';
+
+    const sorted = sortItems(folder.children);
+    const previewItems = sorted.slice(0, 5);
+
+    const itemsHtml = previewItems.map(item => {
+        const isFolder = item.type === 'folder';
+        const icon = isFolder ? '📁' : getFileIcon(item.ext);
+        return `<div class="folder-preview-item"><span>${icon}</span><span class="folder-preview-name">${item.name}</span></div>`;
+    }).join('');
+
+    const moreCount = sorted.length - previewItems.length;
+    const moreHtml = moreCount > 0 ? `<div class="folder-preview-more">+${moreCount} more</div>` : '';
+
+    return `<div class="file-preview folder-preview">${itemsHtml}${moreHtml}</div>`;
+}
+
+/**
  * Render preview for file card (grid view)
  */
 function renderCardPreview(item) {
