@@ -65,6 +65,172 @@ function syntaxHighlightJson(json) {
 }
 
 /**
+ * Format JSONL (JSON Lines) content
+ * Each line is a separate JSON object
+ */
+function formatJsonl(content, truncate = false) {
+    const lines = content.split('\n').filter(line => line.trim());
+    const maxLines = truncate ? 3 : 20;
+    const displayLines = lines.slice(0, maxLines);
+
+    const formatted = displayLines.map((line, idx) => {
+        try {
+            const parsed = JSON.parse(line);
+            const type = parsed.type || 'entry';
+            const summary = getJsonlSummary(parsed);
+            const encodedLine = btoa(encodeURIComponent(line));
+            return `<div class="jsonl-entry jsonl-clickable" onclick="openJsonlEntry('${encodedLine}', '${escapeHtml(type)}')">
+                <span class="jsonl-index">${idx + 1}</span>
+                <span class="jsonl-type">${escapeHtml(type)}</span>
+                <span class="jsonl-summary">${escapeHtml(summary)}</span>
+            </div>`;
+        } catch (e) {
+            return `<div class="jsonl-entry jsonl-invalid">
+                <span class="jsonl-index">${idx + 1}</span>
+                <span class="jsonl-summary">${escapeHtml(line.substring(0, 50))}...</span>
+            </div>`;
+        }
+    }).join('');
+
+    const remaining = lines.length - displayLines.length;
+    const moreHtml = remaining > 0 ? `<div class="jsonl-more">+${remaining} more entries</div>` : '';
+
+    return formatted + moreHtml;
+}
+
+/**
+ * Open a new page displaying the full JSONL entry
+ */
+function openJsonlEntry(encodedData, type) {
+    event.stopPropagation();
+
+    const jsonString = decodeURIComponent(atob(encodedData));
+    let formattedJson;
+    try {
+        const parsed = JSON.parse(jsonString);
+        formattedJson = JSON.stringify(parsed, null, 2);
+    } catch (e) {
+        formattedJson = jsonString;
+    }
+
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSONL Entry: ${type}</title>
+    <style>
+        :root {
+            --primary: #1976d2;
+            --background: #1e1e1e;
+            --surface: #252526;
+            --text: #d4d4d4;
+            --border: #3c3c3c;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 { font-size: 1.25rem; font-weight: 500; }
+        .type-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+        }
+        .content {
+            padding: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        pre {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+        .json-key { color: #9cdcfe; }
+        .json-string { color: #ce9178; }
+        .json-number { color: #b5cea8; }
+        .json-boolean { color: #569cd6; }
+        .json-null { color: #569cd6; }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 16px;
+            color: var(--primary);
+            text-decoration: none;
+        }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>JSONL Entry</h1>
+        <span class="type-badge">${type}</span>
+    </div>
+    <div class="content">
+        <a href="javascript:window.close()" class="back-link">&larr; Close</a>
+        <pre id="json-content"></pre>
+    </div>
+    <script>
+        const jsonStr = ${JSON.stringify(formattedJson)};
+        const highlighted = jsonStr
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"([^"]+)":/g, '<span class="json-key">"$1"</span>:')
+            .replace(/: "([^"]*)"(,?)/g, ': <span class="json-string">"$1"</span>$2')
+            .replace(/: (\\d+\\.?\\d*)(,?)/g, ': <span class="json-number">$1</span>$2')
+            .replace(/: (true|false)(,?)/g, ': <span class="json-boolean">$1</span>$2')
+            .replace(/: (null)(,?)/g, ': <span class="json-null">$1</span>$2');
+        document.getElementById('json-content').innerHTML = highlighted;
+    </script>
+</body>
+</html>`;
+
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+}
+
+/**
+ * Extract a meaningful summary from a JSONL entry
+ */
+function getJsonlSummary(obj) {
+    // Common fields to look for in Claude history JSONL
+    if (obj.summary) return obj.summary;
+    if (obj.message?.content) {
+        const content = typeof obj.message.content === 'string'
+            ? obj.message.content
+            : JSON.stringify(obj.message.content);
+        return content.substring(0, 60) + (content.length > 60 ? '...' : '');
+    }
+    if (obj.content) {
+        const content = typeof obj.content === 'string' ? obj.content : JSON.stringify(obj.content);
+        return content.substring(0, 60) + (content.length > 60 ? '...' : '');
+    }
+    if (obj.subtype) return obj.subtype;
+    if (obj.uuid) return obj.uuid.substring(0, 8) + '...';
+    return Object.keys(obj).slice(0, 3).join(', ');
+}
+
+/**
  * Parse markdown to HTML
  */
 function parseMarkdown(md) {
@@ -98,7 +264,11 @@ function parseMarkdown(md) {
 const previewRenderers = {
     html: (content) => content,
     json: (content) => formatJson(content),
+    jsonl: (content, truncate) => formatJsonl(content, truncate),
     markdown: (content) => parseMarkdown(content),
+    text: (content, truncate) => truncate
+        ? escapeHtml(content.substring(0, 150)) + '...'
+        : escapeHtml(content),
     code: (content, truncate) => truncate
         ? highlightCode(content.substring(0, 150)) + '<span class="code-comment">...</span>'
         : highlightCode(content)
@@ -135,7 +305,7 @@ function renderFolderPreview(folder, parentPath) {
 function renderCardPreview(item) {
     if (!item.preview) return '';
     const fileType = getFileType(item.ext);
-    const classMap = { markdown: 'md-preview', html: 'html-preview', json: 'json-preview', code: 'code-preview' };
+    const classMap = { markdown: 'md-preview', html: 'html-preview', json: 'json-preview', jsonl: 'jsonl-preview', code: 'code-preview', text: 'text-preview' };
     const cssClass = classMap[fileType] || '';
     const content = previewRenderers[fileType](item.preview, true);
     return `<div class="file-preview ${cssClass}">${content}</div>`;
@@ -169,6 +339,26 @@ function renderDetailPreview(item) {
             <div class="detail-section">
                 <h3>Formatted JSON</h3>
                 <pre class="detail-code json-preview">${renderedContent}</pre>
+            </div>
+        `;
+    }
+
+    // JSONL shows structured entries
+    if (fileType === 'jsonl') {
+        return `
+            <div class="detail-section">
+                <h3>JSONL Entries</h3>
+                <div class="jsonl-preview">${renderedContent}</div>
+            </div>
+        `;
+    }
+
+    // Plain text files
+    if (fileType === 'text') {
+        return `
+            <div class="detail-section">
+                <h3>Content</h3>
+                <pre class="detail-code">${renderedContent}</pre>
             </div>
         `;
     }
