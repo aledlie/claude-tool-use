@@ -1,7 +1,7 @@
 /**
  * Repository file structure data
  * Auto-generated from directory contents
- * Generated: 2026-01-19T22:35:26.633Z
+ * Generated: 2026-01-19T22:50:45.581Z
  */
 const fileStructure = {
   "name": "claude-tool-use",
@@ -37581,12 +37581,6 @@ const fileStructure = {
         }
       ],
       "truncated": 1505
-    },
-    {
-      "name": "README.md",
-      "type": "file",
-      "size": 2642,
-      "ext": "md"
     }
   ]
 };

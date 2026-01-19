@@ -9,7 +9,7 @@ const path = require('path');
 
 const ROOT_DIR = path.resolve(__dirname, '..');
 const SKIP_DIRS = new Set(['node_modules', '.git', '.claude', 'scripts', 'css', 'js', 'docs']);
-const SKIP_FILES = new Set(['index.html', 'package-lock.json', 'playwright.config.ts', 'package.json', 'CLAUDE.md', '.gitignore']);
+const SKIP_FILES = new Set(['index.html', 'package-lock.json', 'playwright.config.ts', 'package.json', 'CLAUDE.md', '.gitignore', 'README.md']);
 const LARGE_DIRS = new Set(['debug', 'todos', 'file-history', 'shell-snapshots']); // Skip previews in large dirs
 const MAX_PREVIEW_SIZE = 100;
 const MAX_FILES_PER_DIR = 20; // Default limit
