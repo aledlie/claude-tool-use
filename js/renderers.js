@@ -319,12 +319,12 @@ function renderDetailPreview(item) {
     const fileType = getFileType(item.ext);
     const renderedContent = previewRenderers[fileType](item.preview, false);
 
-    // HTML shows both rendered and source
-    if (fileType === 'html') {
+    // Types that show both rendered and source
+    if (fileType === 'html' || fileType === 'markdown') {
         return `
             <div class="detail-section">
                 <h3>Rendered Preview</h3>
-                <div class="${fileType}-preview">${renderedContent}</div>
+                <div class="${fileType === 'markdown' ? 'md' : fileType}-preview">${renderedContent}</div>
             </div>
             <div class="detail-section">
                 <h3>Source</h3>
@@ -353,12 +353,12 @@ function renderDetailPreview(item) {
         `;
     }
 
-    // Plain text and markdown files
-    if (fileType === 'text' || fileType === 'markdown') {
+    // Plain text files
+    if (fileType === 'text') {
         return `
             <div class="detail-section">
                 <h3>Content</h3>
-                <pre class="detail-code">${escapeHtml(item.preview)}</pre>
+                <pre class="detail-code">${renderedContent}</pre>
             </div>
         `;
     }
