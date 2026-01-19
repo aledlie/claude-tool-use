@@ -118,7 +118,7 @@ function renderFolderPreview(folder, parentPath) {
         const isFolder = item.type === 'folder';
         const icon = isFolder ? '📁' : getFileIcon(item.ext);
         const clickAction = isFolder
-            ? `navigateTo(${JSON.stringify([...folderPath, item.name])})`
+            ? `navigateTo(${JSON.stringify([...folderPath, item.name]).replace(/"/g, '&quot;')})`
             : `openDetail(${JSON.stringify(item).replace(/"/g, '&quot;')})`;
         return `<div class="folder-preview-item" onclick="event.stopPropagation(); ${clickAction}"><span>${icon}</span><span class="folder-preview-name">${item.name}</span></div>`;
     }).join('');
