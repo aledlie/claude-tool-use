@@ -332,6 +332,31 @@ body {
 .json-boolean { color: #c792ea; }
 .json-null { color: #89ddff; }
 
+/* Code syntax highlighting */
+.code-preview {
+    font-family: 'Monaco', 'Menlo', monospace;
+    white-space: pre-wrap;
+    background: #263238;
+    color: #eeffff;
+}
+
+.file-preview.code-preview {
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    max-height: 80px;
+    overflow: hidden;
+}
+
+.code-keyword { color: #c792ea; }
+.code-string { color: #c3e88d; }
+.code-number { color: #f78c6c; }
+.code-comment { color: #546e7a; font-style: italic; }
+.code-type { color: #ffcb6b; }
+.code-function { color: #82aaff; }
+.code-operator { color: #89ddff; }
+.code-property { color: #f07178; }
+
 .md-preview {
     padding: 16px;
     border: 1px solid var(--border);

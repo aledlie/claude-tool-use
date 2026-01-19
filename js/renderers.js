@@ -3,6 +3,43 @@
  */
 
 /**
+ * Apply syntax highlighting to code (TypeScript/JavaScript)
+ */
+function highlightCode(code) {
+    let html = escapeHtml(code);
+
+    // Comments (single-line)
+    html = html.replace(/(\/\/[^\n]*)/g, '<span class="code-comment">$1</span>');
+
+    // Strings (double and single quotes)
+    html = html.replace(/("(?:[^"\\]|\\.)*")/g, '<span class="code-string">$1</span>');
+    html = html.replace(/('(?:[^'\\]|\\.)*')/g, '<span class="code-string">$1</span>');
+
+    // Keywords
+    const keywords = ['import', 'export', 'from', 'const', 'let', 'var', 'function', 'return',
+                      'if', 'else', 'for', 'while', 'class', 'extends', 'new', 'this',
+                      'async', 'await', 'try', 'catch', 'throw', 'default', 'typeof',
+                      'interface', 'type', 'enum', 'implements', 'private', 'public', 'protected'];
+    const keywordPattern = new RegExp('\\b(' + keywords.join('|') + ')\\b', 'g');
+    html = html.replace(keywordPattern, '<span class="code-keyword">$1</span>');
+
+    // Types (capitalized words, common types)
+    html = html.replace(/\b([A-Z][a-zA-Z0-9]*)\b/g, '<span class="code-type">$1</span>');
+    html = html.replace(/:\s*(string|number|boolean|void|any|null|undefined)\b/g, ': <span class="code-type">$1</span>');
+
+    // Numbers
+    html = html.replace(/\b(\d+\.?\d*)\b/g, '<span class="code-number">$1</span>');
+
+    // Function calls
+    html = html.replace(/\b([a-z_][a-zA-Z0-9_]*)\s*\(/g, '<span class="code-function">$1</span>(');
+
+    // Operators
+    html = html.replace(/(&gt;|&lt;|=&gt;|===|!==|==|!=|\|\||&amp;&amp;)/g, '<span class="code-operator">$1</span>');
+
+    return html;
+}
+
+/**
  * Format JSON with syntax highlighting
  */
 function formatJson(jsonStr) {
@@ -63,8 +100,8 @@ const previewRenderers = {
     json: (content) => formatJson(content),
     markdown: (content) => parseMarkdown(content),
     code: (content, truncate) => truncate
-        ? escapeHtml(content.substring(0, 150)) + '...'
-        : escapeHtml(content)
+        ? highlightCode(content.substring(0, 150)) + '<span class="code-comment">...</span>'
+        : highlightCode(content)
 };
 
 /**
@@ -73,8 +110,9 @@ const previewRenderers = {
 function renderCardPreview(item) {
     if (!item.preview) return '';
     const fileType = getFileType(item.ext);
-    const cssClass = fileType === 'code' ? '' : `${fileType === 'markdown' ? 'md' : fileType}-preview`;
-    const content = previewRenderers[fileType](item.preview, fileType === 'code');
+    const classMap = { markdown: 'md-preview', html: 'html-preview', json: 'json-preview', code: 'code-preview' };
+    const cssClass = classMap[fileType] || '';
+    const content = previewRenderers[fileType](item.preview, true);
     return `<div class="file-preview ${cssClass}">${content}</div>`;
 }
 
@@ -110,11 +148,11 @@ function renderDetailPreview(item) {
         `;
     }
 
-    // Default: code preview
+    // Default: code preview with syntax highlighting
     return `
         <div class="detail-section">
-            <h3>Preview</h3>
-            <pre class="detail-code">${renderedContent}</pre>
+            <h3>Code Preview</h3>
+            <pre class="detail-code code-preview">${renderedContent}</pre>
         </div>
     `;
 }
