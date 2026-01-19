@@ -490,7 +490,7 @@
                                     type: 'folder',
                                     children: [
                                         { name: 'api', type: 'folder', children: [
-                                            { name: 'postsApi.ts', type: 'file', size: 1200, ext: 'ts', preview: 'import { apiClient } from "@/lib/apiClient";\nimport type { Post } from "~types/post";\n\nexport const postsApi = {\n  getAll: () => apiClient.get<Post[]>("/posts"),\n  getById: (id: number) => apiClient.get<Post>(`/posts/${id}`),\n  create: (data: Partial<Post>) => apiClient.post("/posts", data),\n};' }
+                                            { name: 'postsApi.ts', type: 'file', size: 1200, ext: 'ts', preview: 'import { apiClient } from "@/lib/apiClient";\nimport type { Post } from "~types/post";\n\nexport const postsApi = {\n  getAll: () => apiClient.get<Post[]>("/posts"),\n  getById: (id: number) => apiClient.get<Post>("/posts/" + id),\n  create: (data: Partial<Post>) => apiClient.post("/posts", data),\n};' }
                                         ]},
                                         { name: 'components', type: 'folder', children: [
                                             { name: 'PostList.tsx', type: 'file', size: 2800, ext: 'tsx', preview: 'import { useSuspenseQuery } from "@tanstack/react-query";\nimport { postsApi } from "../api/postsApi";\n\nexport const PostList: React.FC = () => {\n  const { data: posts } = useSuspenseQuery({\n    queryKey: ["posts"],\n    queryFn: postsApi.getAll,\n  });\n  return <Grid container>{posts.map(...)}</Grid>;\n};' },
@@ -524,7 +524,7 @@
                                 { name: 'index.tsx', type: 'file', size: 560, ext: 'tsx', preview: 'import { createFileRoute } from "@tanstack/react-router";\nimport { lazy } from "react";\n\nconst HomePage = lazy(() => import("@/features/home/components/HomePage"));\n\nexport const Route = createFileRoute("/")({ component: HomePage });' },
                                 { name: 'posts', type: 'folder', children: [
                                     { name: 'index.tsx', type: 'file', size: 680, ext: 'tsx', preview: 'import { createFileRoute } from "@tanstack/react-router";\nimport { lazy } from "react";\nimport { SuspenseLoader } from "~components/SuspenseLoader";\n\nconst PostList = lazy(() => import("~features/posts"));\n\nexport const Route = createFileRoute("/posts/")({ component: () => <SuspenseLoader><PostList /></SuspenseLoader> });' },
-                                    { name: '$postId.tsx', type: 'file', size: 820, ext: 'tsx', preview: 'import { createFileRoute } from "@tanstack/react-router";\nimport { lazy } from "react";\n\nconst PostDetail = lazy(() => import("~features/posts/components/PostDetail"));\n\nexport const Route = createFileRoute("/posts/$postId")({ \n  component: PostDetail,\n  loader: ({ params }) => ({ crumb: `Post ${params.postId}` }),\n});' }
+                                    { name: '$postId.tsx', type: 'file', size: 820, ext: 'tsx', preview: 'import { createFileRoute } from "@tanstack/react-router";\nimport { lazy } from "react";\n\nconst PostDetail = lazy(() => import("~features/posts/components/PostDetail"));\n\nexport const Route = createFileRoute("/posts/$postId")({ \n  component: PostDetail,\n  loader: ({ params }) => ({ crumb: "Post " + params.postId }),\n});' }
                                 ]}
                             ]
                         },
@@ -543,8 +543,8 @@
                 { name: 'package.json', type: 'file', size: 1800, ext: 'json', preview: '{\n  "name": "claude-tool-use",\n  "version": "1.0.0",\n  "scripts": {\n    "dev": "vite",\n    "build": "tsc && vite build",\n    "preview": "vite preview"\n  },\n  "dependencies": {\n    "react": "^18.2.0",\n    "@tanstack/react-query": "^5.0.0",\n    "@tanstack/react-router": "^1.0.0",\n    "@mui/material": "^7.0.0"\n  }\n}' },
                 { name: 'tsconfig.json', type: 'file', size: 680, ext: 'json', preview: '{\n  "compilerOptions": {\n    "target": "ES2020",\n    "lib": ["ES2020", "DOM"],\n    "module": "ESNext",\n    "strict": true,\n    "paths": {\n      "@/*": ["./src/*"],\n      "~types": ["./src/types"],\n      "~components/*": ["./src/components/*"],\n      "~features/*": ["./src/features/*"]\n    }\n  }\n}' },
                 { name: 'vite.config.ts', type: 'file', size: 920, ext: 'ts', preview: 'import { defineConfig } from "vite";\nimport react from "@vitejs/plugin-react";\nimport path from "path";\n\nexport default defineConfig({\n  plugins: [react()],\n  resolve: {\n    alias: {\n      "@": path.resolve(__dirname, "./src"),\n      "~types": path.resolve(__dirname, "./src/types"),\n    },\n  },\n});' },
-                { name: 'README.md', type: 'file', size: 2400, ext: 'md', preview: '# Claude Tool Use\n\nA modern React application demonstrating best practices for:\n- Suspense-based data fetching\n- Feature-based file organization\n- TanStack Query & Router\n- MUI v7 styling\n\n## Getting Started\n\n```bash\nnpm install\nnpm run dev\n```' },
-                { name: 'index.html', type: 'file', size: 480, ext: 'html', preview: '<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>Claude Tool Use</title>\n</head>\n<body>\n  <div id="root"></div>\n  <script type="module" src="/src/main.tsx"></script>\n</body>\n</html>' }
+                { name: 'README.md', type: 'file', size: 2400, ext: 'md', preview: '# Claude Tool Use\n\nA modern React application demonstrating best practices for:\n- Suspense-based data fetching\n- Feature-based file organization\n- TanStack Query & Router\n- MUI v7 styling\n\n## Getting Started\n\nnpm install\nnpm run dev' },
+                { name: 'index.html', type: 'file', size: 480, ext: 'html', preview: '<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>Claude Tool Use</title>\n</head>\n<body>\n  <div id="root"></div>\n  <script type="module" src="/src/main.tsx"><\\/script>\n</body>\n</html>' }
             ]
         };
 
@@ -792,6 +792,13 @@
             document.getElementById('detailPanel').classList.remove('open');
             document.getElementById('overlay').classList.remove('open');
         }
+
+        // Expose functions globally for testing
+        window.setView = setView;
+        window.navigateTo = navigateTo;
+        window.openDetail = openDetail;
+        window.closeDetail = closeDetail;
+        window.getCurrentFolder = getCurrentFolder;
 
         // Initialize on load
         init();
