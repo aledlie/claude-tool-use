@@ -365,6 +365,15 @@ body {
     gap: 6px;
     font-size: 0.75rem;
     color: var(--text-primary);
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: background 0.15s;
+}
+
+.folder-preview-item:hover {
+    background: var(--hover);
+    color: var(--primary);
 }
 
 .folder-preview-name {

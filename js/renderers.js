@@ -107,16 +107,20 @@ const previewRenderers = {
 /**
  * Render preview for folder contents
  */
-function renderFolderPreview(folder) {
+function renderFolderPreview(folder, parentPath) {
     if (!folder.children || folder.children.length === 0) return '';
 
     const sorted = sortItems(folder.children);
     const previewItems = sorted.slice(0, 5);
+    const folderPath = [...parentPath, folder.name];
 
     const itemsHtml = previewItems.map(item => {
         const isFolder = item.type === 'folder';
         const icon = isFolder ? '📁' : getFileIcon(item.ext);
-        return `<div class="folder-preview-item"><span>${icon}</span><span class="folder-preview-name">${item.name}</span></div>`;
+        const clickAction = isFolder
+            ? `navigateTo(${JSON.stringify([...folderPath, item.name])})`
+            : `openDetail(${JSON.stringify(item).replace(/"/g, '&quot;')})`;
+        return `<div class="folder-preview-item" onclick="event.stopPropagation(); ${clickAction}"><span>${icon}</span><span class="folder-preview-name">${item.name}</span></div>`;
     }).join('');
 
     const moreCount = sorted.length - previewItems.length;

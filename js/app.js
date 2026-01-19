@@ -123,7 +123,7 @@ function renderGrid() {
                         ? `<span>${item.children?.length || 0} items</span>`
                         : `<span>${formatSize(item.size)}</span><span>${item.ext?.toUpperCase() || 'FILE'}</span>`}
                 </div>
-                ${isFolder ? renderFolderPreview(item) : renderCardPreview(item)}
+                ${isFolder ? renderFolderPreview(item, currentPath) : renderCardPreview(item)}
             </div>
         `;
     }).join('');
